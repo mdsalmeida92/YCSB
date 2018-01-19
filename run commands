@@ -1,0 +1,4 @@
+
+run load
+./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputLoad.txt
+

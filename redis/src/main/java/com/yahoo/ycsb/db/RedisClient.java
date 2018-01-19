@@ -24,22 +24,29 @@
 
 package com.yahoo.ycsb.db;
 
+
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
 import com.yahoo.ycsb.Status;
 import com.yahoo.ycsb.StringByteIterator;
 
+import API.clientAPI;
+import client.clientMasterSlave;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Protocol;
+import utils.Cipher;
+import utils.SecurityType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 /**
  * YCSB binding for <a href="http://redis.io/">Redis</a>.
@@ -48,111 +55,154 @@ import java.util.Vector;
  */
 public class RedisClient extends DB {
 
-  private Jedis jedis;
+	private clientAPI client;
 
-  public static final String HOST_PROPERTY = "redis.host";
-  public static final String PORT_PROPERTY = "redis.port";
-  public static final String PASSWORD_PROPERTY = "redis.password";
+	public static final String HOST_PROPERTY = "redis.host";
+	public static final String PORT_PROPERTY = "redis.port";
+	public static final String PASSWORD_PROPERTY = "redis.password";
 
-  public static final String INDEX_KEY = "_indices";
+	public static final String INDEX_KEY = "_indices";
 
-  public void init() throws DBException {
-    Properties props = getProperties();
-    int port;
+	public static final String ENCRYPTION_PROPERTY = "redis.encryption";
 
-    String portString = props.getProperty(PORT_PROPERTY);
-    if (portString != null) {
-      port = Integer.parseInt(portString);
-    } else {
-      port = Protocol.DEFAULT_PORT;
-    }
-    String host = props.getProperty(HOST_PROPERTY);
+	public void init() throws DBException {
+		Properties props = getProperties();
+		int port;
 
-    jedis = new Jedis(host, port);
-    jedis.connect();
+		String portString = props.getProperty(PORT_PROPERTY);
+		if (portString != null) {
+			port = Integer.parseInt(portString);
+		} else {
+			port = Protocol.DEFAULT_PORT;
+		}
 
-    String password = props.getProperty(PASSWORD_PROPERTY);
-    if (password != null) {
-      jedis.auth(password);
-    }
-  }
+		String encryption = props.getProperty(ENCRYPTION_PROPERTY);
+		String host = props.getProperty(HOST_PROPERTY);
 
-  public void cleanup() throws DBException {
-    jedis.disconnect();
-  }
+		Map<String,Cipher> mapping = new HashMap<String,Cipher>();
+		mapping.put("field1", Cipher.DET);
+		mapping.put("field2", Cipher.DET);
+		mapping.put("field3", Cipher.ADD);
+		mapping.put("field4", Cipher.MULT);
+		mapping.put("field5", Cipher.OPE);
+		mapping.put("field6", Cipher.SEARCH);
 
-  /*
-   * Calculate a hash for a key to store it in an index. The actual return value
-   * of this function is not interesting -- it primarily needs to be fast and
-   * scattered along the whole space of doubles. In a real world scenario one
-   * would probably use the ASCII values of the keys.
-   */
-  private double hash(String key) {
-    return key.hashCode();
-  }
 
-  // XXX jedis.select(int index) to switch to `table`
+		//NORMAL
+		System.err.println("https://"+host+":"+port+"/");
+		System.err.println("Working Directory = " + System.getProperty("user.dir"));
+		client= new clientMasterSlave("https://"+host+":"+port+"/");
+		if(client == null)
+			System.err.println("esta null");
 
-  @Override
-  public Status read(String table, String key, Set<String> fields,
-      Map<String, ByteIterator> result) {
-    if (fields == null) {
-      StringByteIterator.putAllAsByteIterators(result, jedis.hgetAll(key));
-    } else {
-      String[] fieldArray =
-          (String[]) fields.toArray(new String[fields.size()]);
-      List<String> values = jedis.hmget(key, fieldArray);
+		//ENCRYPTED
+		if("E".equals(encryption)) {
+			client= new clientMasterSlave("https://"+host+":"+port+"/",SecurityType.ENCRYPTED, "" ,mapping);
+		}
 
-      Iterator<String> fieldIterator = fields.iterator();
-      Iterator<String> valueIterator = values.iterator();
 
-      while (fieldIterator.hasNext() && valueIterator.hasNext()) {
-        result.put(fieldIterator.next(),
-            new StringByteIterator(valueIterator.next()));
-      }
-      assert !fieldIterator.hasNext() && !valueIterator.hasNext();
-    }
-    return result.isEmpty() ? Status.ERROR : Status.OK;
-  }
+		//ENHACED ENCRYPTED
+		if("EE".equals(encryption)) {
+			client= new clientMasterSlave("https://"+host+":"+port+"/", SecurityType.ENHANCED_ENCRYPTED, "" ,mapping);
+		}
 
-  @Override
-  public Status insert(String table, String key,
-      Map<String, ByteIterator> values) {
-    if (jedis.hmset(key, StringByteIterator.getStringMap(values))
-        .equals("OK")) {
-      jedis.zadd(INDEX_KEY, hash(key), key);
-      return Status.OK;
-    }
-    return Status.ERROR;
-  }
+	}
 
-  @Override
-  public Status delete(String table, String key) {
-    return jedis.del(key) == 0 && jedis.zrem(INDEX_KEY, key) == 0 ? Status.ERROR
-        : Status.OK;
-  }
+	public void cleanup() throws DBException {
+		client.Close();
+	}
 
-  @Override
-  public Status update(String table, String key,
-      Map<String, ByteIterator> values) {
-    return jedis.hmset(key, StringByteIterator.getStringMap(values))
-        .equals("OK") ? Status.OK : Status.ERROR;
-  }
+	/*
+	 * Calculate a hash for a key to store it in an index. The actual return value
+	 * of this function is not interesting -- it primarily needs to be fast and
+	 * scattered along the whole space of doubles. In a real world scenario one
+	 * would probably use the ASCII values of the keys.
+	 */
+	private double hash(String key) {
+		return key.hashCode();
+	}
 
-  @Override
-  public Status scan(String table, String startkey, int recordcount,
-      Set<String> fields, Vector<HashMap<String, ByteIterator>> result) {
-    Set<String> keys = jedis.zrangeByScore(INDEX_KEY, hash(startkey),
-        Double.POSITIVE_INFINITY, 0, recordcount);
+	// XXX jedis.select(int index) to switch to `table`
 
-    HashMap<String, ByteIterator> values;
-    for (String key : keys) {
-      values = new HashMap<String, ByteIterator>();
-      read(table, key, fields, values);
-      result.add(values);
-    }
+	@Override
+	public Status read(String table, String key, Set<String> fields,
+			Map<String, ByteIterator> result) {
+		try {
+			if (fields == null) {
 
-    return Status.OK;
-  }
+				StringByteIterator.putAllAsByteIterators(result, client.getSet(key).get());
 
+			} else {
+				for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+					String field = (String) iterator.next();
+					;
+					result.put(field,new StringByteIterator(client.getElement(key, field).get()));
+				}
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result.isEmpty() ? Status.ERROR : Status.OK;
+	}
+
+	@Override
+	public Status insert(String table, String key,
+			Map<String, ByteIterator> values) {
+		Map<String, String> map = StringByteIterator.getStringMap(values);
+
+		try {
+			client.addSet(key, map);
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		for (Map.Entry<String, String> pair : map.entrySet()) {
+			System.err.println(pair.getKey() + "    " + pair.getValue() + "ola");
+		}
+		System.err.println();
+		System.err.println(key);
+		return Status.OK;
+
+	}
+
+	@Override
+	public Status delete(String table, String key) {
+
+		try {
+			client.removeSet(key);
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status update(String table, String key,
+			Map<String, ByteIterator> values) {
+		Map<String, String> map = StringByteIterator.getStringMap(values);
+		for (Map.Entry<String, String> pair : map.entrySet()) {
+			client.addElement(key, pair.getKey(), pair.getValue())	;
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status scan(String table, String startkey, int recordcount,
+			Set<String> fields, Vector<HashMap<String, ByteIterator>> result) {
+
+		//		Set<String> keys = jedis.zrangeByScore(INDEX_KEY, hash(startkey),
+		//				Double.POSITIVE_INFINITY, 0, recordcount);
+		//
+		//		HashMap<String, ByteIterator> values;
+		//		for (String key : keys) {
+		//			values = new HashMap<String, ByteIterator>();
+		//			read(table, key, fields, values);
+		//			result.add(values);
+		//		}
+
+		return Status.OK;
+	}
 }

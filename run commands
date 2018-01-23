@@ -1,4 +1,14 @@
 
-run load
+Load the data:
 ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputLoad.txt
+
+
+Run the workload test:
+./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputRun.txt
+
+
+
+
+run server:
+java -Djavax.net.ssl.keyStore=server.jks -Djavax.net.ssl.keyStorePassword=changeme -jar AppServer.jar
 

@@ -157,4 +157,88 @@ public class GoodBadUglyDB extends DB {
     delay();
     return Status.OK;
   }
+
+@Override
+public Status elementContainsSentence(String key, String field, String word) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status searchEntryContainingSentence(String field, String word) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status incr(String key, String field, int value) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status sum(String key1, String field, String key2) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status sumAll(String field) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status multConst(String key, String field, int constant) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status mult(String key1, String field, String key2) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status multAll(String field) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status searchElement(String field, String value) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status searchEntry(Map<String, String> set) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status orderEntrys(String field) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status searchGreaterThan(String field, int value) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status searchLesserThan(String field, int value) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Status valuegreaterThan(String key1, String field, String key2) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

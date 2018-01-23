@@ -89,8 +89,6 @@ public class RedisClient extends DB {
 
 
 		//NORMAL
-		System.err.println("https://"+host+":"+port+"/");
-		System.err.println("Working Directory = " + System.getProperty("user.dir"));
 		client= new clientMasterSlave("https://"+host+":"+port+"/");
 		if(client == null)
 			System.err.println("esta null");
@@ -127,6 +125,7 @@ public class RedisClient extends DB {
 	@Override
 	public Status read(String table, String key, Set<String> fields,
 			Map<String, ByteIterator> result) {
+		System.err.println("read redis");
 		try {
 			if (fields == null) {
 
@@ -205,4 +204,170 @@ public class RedisClient extends DB {
 
 		return Status.OK;
 	}
+	
+	@Override
+	public Status elementContainsSentence(String key, String field, String word) {
+		// TODO Auto-generated method stub
+		try {
+			client.elementContainsSentence(key, field, word).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Status searchEntryContainingSentence(String field, String word) {
+		// TODO Auto-generated method stub
+		try {
+			client.searchEntryContainingSentence(field, word).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Status incr(String key, String field, int value) {
+		// TODO Auto-generated method stub
+		client.incrBy(key, field, value);
+		return Status.OK;
+	}
+
+	@Override
+	public Status sum(String key1, String field, String key2) {
+		// TODO Auto-generated method stub
+		System.err.println("soma redis");
+		try {
+			client.sum(key1, field, key2).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status sumAll(String field) {
+		// TODO Auto-generated method stub
+		try {
+			client.sumAll(field).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status multConst(String key, String field, int constant) {
+		// TODO Auto-generated method stub
+		try {
+			client.multConst(key, field, constant).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status mult(String key1, String field, String key2) {
+		// TODO Auto-generated method stub
+		try {
+			client.mult(key1, field, key2).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+		return Status.OK;
+	}
+
+	@Override
+	public Status multAll(String field) {
+		// TODO Auto-generated method stub
+		try {
+			client.multAll(field).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status searchElement(String field, String value) {
+		// TODO Auto-generated method stub
+		try {
+			client.searchElement(field, value).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status searchEntry(Map<String, String> set) {
+		// TODO Auto-generated method stub
+		try {
+			client.searchEntry(set).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status orderEntrys(String field) {
+		// TODO Auto-generated method stub
+		try {
+			client.orderEntrys(field).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status searchGreaterThan(String field, int value) {
+		// TODO Auto-generated method stub
+		try {
+			client.searchGreaterThan(field, value).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status searchLesserThan(String field, int value) {
+		// TODO Auto-generated method stub
+		try {
+			client.searchLesserThan(field, value).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+	@Override
+	public Status valuegreaterThan(String key1, String field, String key2) {
+		// TODO Auto-generated method stub
+		try {
+			client.valuegreaterThan(key1, field, key2).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Status.OK;
+	}
+
+
 }

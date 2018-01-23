@@ -132,4 +132,34 @@ public abstract class DB {
    * @return The result of the operation.
    */
   public abstract Status delete(String table, String key);
+  
+  public abstract Status elementContainsSentence(String key, String field, String word);
+  
+  public abstract Status searchEntryContainingSentence(String field, String word);
+  
+  public abstract Status incr(String key, String field, int value);
+  
+  public abstract Status sum (String key1, String field, String key2);
+  
+  public abstract Status sumAll (String field);
+  
+  public abstract Status multConst(String key, String field, int constant);
+  
+  public abstract Status mult (String key1, String field, String key2);
+  
+  public abstract Status multAll (String field);
+  
+  public abstract Status searchElement (String field, String value);
+  
+  public abstract Status searchEntry (Map<String, String> set);
+  
+  public abstract Status orderEntrys (String field);
+  
+  public abstract Status searchGreaterThan (String field, int value);
+  
+  public abstract Status searchLesserThan (String field, int value);
+  
+  public abstract Status valuegreaterThan(String key1, String field, String key2);
+  
+  
 }

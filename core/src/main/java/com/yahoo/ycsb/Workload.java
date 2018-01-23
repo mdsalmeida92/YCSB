@@ -43,8 +43,9 @@ public abstract class Workload {
   
   private volatile AtomicBoolean stopRequested = new AtomicBoolean(false);
   
-  /** Operations available for a database. */
+  /** Operations available for a database. doesn't do anything */
   public enum Operation {
+	SUM,
     READ,
     UPDATE,
     INSERT,

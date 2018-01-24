@@ -422,7 +422,7 @@ public class CoreWorkload extends Workload {
 		fieldcount =
 				Long.parseLong(p.getProperty(FIELD_COUNT_PROPERTY, FIELD_COUNT_PROPERTY_DEFAULT));
 		fieldnames = new ArrayList<>();
-		for (int i = 1; i < fieldcount; i++) {
+		for (int i = 1; i <= fieldcount; i++) {
 			fieldnames.add("field" + i);
 		}
 		fieldlengthgenerator = CoreWorkload.getFieldLengthGenerator(p);
@@ -586,7 +586,7 @@ public class CoreWorkload extends Workload {
 			data = new StringByteIterator(loremIpsum.getWords(length, r.nextInt(10)));
 			break;
 		case "field3": case "field5":
-			data = new StringByteIterator(Integer.toString((new Random().nextInt())));
+			data = new StringByteIterator(Integer.toString((new Random().nextInt(100))));
 			break;
 		case "field4": 
 			data = new StringByteIterator(Integer.toString((new Random().nextInt(10))));
@@ -597,6 +597,7 @@ public class CoreWorkload extends Workload {
 		default:
 			break;
 		}
+		System.err.println("field:" + fieldkey + "data: "+data);
 		return data;
 	}
 
@@ -756,7 +757,7 @@ public class CoreWorkload extends Workload {
 
 		long keynum = nextKeynum();
 		String keyname = buildKeyName(keynum);
-		String field = "field2";
+		String field = "field3";
 		Random r = new Random();
 		int value = r.nextInt();
 		db.incr(keyname, field, value);
@@ -771,7 +772,7 @@ public class CoreWorkload extends Workload {
 		String keyname = buildKeyName(keynum);
 		String keyname2 = buildKeyName(keynum2);
 
-		String field = "field2";
+		String field = "field3";
 		db.sum(keyname, field, keyname2);
 
 
@@ -780,7 +781,7 @@ public class CoreWorkload extends Workload {
 
 	private void doTransactionSumAll(DB db) {
 
-		String field = "field2";
+		String field = "field3";
 		db.sumAll(field);
 	}
 
@@ -788,9 +789,12 @@ public class CoreWorkload extends Workload {
 
 		long keynum = nextKeynum();
 		String keyname = buildKeyName(keynum);
-		String field = "field2";
+		System.err.println("keyname, mulstconst + "+ keyname);
+		String field = "field3";
 		Random r = new Random();
-		int constant = r.nextInt(100);
+		int constant = r.nextInt(10);
+		System.err.println("field, mulstconst + "+ field);
+		System.err.println("constante, mulstconst + "+ constant);
 		db.multConst(keyname, field, constant);
 	}
 
@@ -856,6 +860,8 @@ public class CoreWorkload extends Workload {
 
 		String keyname = buildKeyName(keynum);
 		String keyname2 = buildKeyName(keynum2);
+		System.err.println("keyname + "+ keyname);
+		System.err.println("keyname2 + "+ keyname2);
 		String field = "field5";
 		db.valuegreaterThan(keyname, field, keyname2);
 	}

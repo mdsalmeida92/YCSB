@@ -23,7 +23,7 @@
 #   Request distribution: zipfian
 
 recordcount=1000
-operationcount=50
+operationcount=100
 workload=com.yahoo.ycsb.workloads.CoreWorkload
 
 readallfields=true
@@ -33,6 +33,20 @@ updateproportion=0.5
 sumproportion=0.5
 scanproportion=0
 insertproportion=0
+elementContainsSentenceproportion=0.5
+searchEntryContainingSentenceproportion=0.5
+incrproportion=0.5
+sumproportion=0.5
+sumAllproportion=0.5
+multConstproportion=0.5
+multproportion=0.5
+multAllproportion=0.5
+searchElementproportion=0.5
+searchEntryproportion=0.5
+orderEntrysproportion=0.5
+searchGreaterThanproportion=0.5
+searchLesserThanproportion=0.5
+valuegreaterThanproportion=0.5
 
 requestdistribution=zipfian
 

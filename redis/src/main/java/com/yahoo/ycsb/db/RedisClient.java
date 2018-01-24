@@ -214,7 +214,7 @@ public class RedisClient extends DB {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return Status.OK;
 	}
 
 	@Override
@@ -226,7 +226,7 @@ public class RedisClient extends DB {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return Status.OK;
 	}
 
 	@Override

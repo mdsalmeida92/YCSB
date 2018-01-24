@@ -22,6 +22,8 @@ import com.yahoo.ycsb.generator.*;
 import com.yahoo.ycsb.generator.UniformLongGenerator;
 import com.yahoo.ycsb.measurements.Measurements;
 
+import de.svenjacobs.loremipsum.LoremIpsum;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -74,6 +76,8 @@ public class CoreWorkload extends Workload {
 
 	protected String table;
 
+	protected LoremIpsum loremIpsum;
+
 	/**
 	 * The name of the property for the number of fields in a record.
 	 */
@@ -82,7 +86,7 @@ public class CoreWorkload extends Workload {
 	/**
 	 * Default number of fields in a record.
 	 */
-	public static final String FIELD_COUNT_PROPERTY_DEFAULT = "10";
+	public static final String FIELD_COUNT_PROPERTY_DEFAULT = "6";
 
 	private List<String> fieldnames;
 
@@ -412,12 +416,13 @@ public class CoreWorkload extends Workload {
 	 */
 	@Override
 	public void init(Properties p) throws WorkloadException {
+		loremIpsum = new LoremIpsum();
 		table = p.getProperty(TABLENAME_PROPERTY, TABLENAME_PROPERTY_DEFAULT);
 
 		fieldcount =
 				Long.parseLong(p.getProperty(FIELD_COUNT_PROPERTY, FIELD_COUNT_PROPERTY_DEFAULT));
 		fieldnames = new ArrayList<>();
-		for (int i = 0; i < fieldcount; i++) {
+		for (int i = 1; i < fieldcount; i++) {
 			fieldnames.add("field" + i);
 		}
 		fieldlengthgenerator = CoreWorkload.getFieldLengthGenerator(p);
@@ -547,17 +552,12 @@ public class CoreWorkload extends Workload {
 	/**
 	 * Builds a value for a randomly chosen field.
 	 */
-	private HashMap<String, ByteIterator> buildSingleValue(String key) {
+	private HashMap<String, ByteIterator> buildSingleValueOld(String key) {
 		HashMap<String, ByteIterator> value = new HashMap<>();
 
 		String fieldkey = fieldnames.get(fieldchooser.nextValue().intValue());
-		ByteIterator data;
-		if (dataintegrity) {
-			data = new StringByteIterator(buildDeterministicValue(key, fieldkey));
-		} else {
-			// fill with random data
-			data = new RandomByteIterator(fieldlengthgenerator.nextValue().longValue());
-		}
+		ByteIterator data = buildSingleValue(fieldkey);
+		
 		value.put(fieldkey, data);
 
 		return value;
@@ -570,16 +570,34 @@ public class CoreWorkload extends Workload {
 		HashMap<String, ByteIterator> values = new HashMap<>();
 
 		for (String fieldkey : fieldnames) {
-			ByteIterator data;
-			if (dataintegrity) {
-				data = new StringByteIterator(buildDeterministicValue(key, fieldkey));
-			} else {
-				// fill with random data
-				data = new RandomByteIterator(fieldlengthgenerator.nextValue().longValue());
-			}
+			ByteIterator data = buildSingleValue(fieldkey);
 			values.put(fieldkey, data);
+			
 		}
 		return values;
+	}
+	
+	private ByteIterator buildSingleValue(String fieldkey) {
+		ByteIterator data = null;
+		Random r = new Random();
+		int length = (int)(fieldlengthgenerator.nextValue().longValue()/10);
+		switch (fieldkey) {
+		case "field1": case "field2": 
+			data = new StringByteIterator(loremIpsum.getWords(length, r.nextInt(10)));
+			break;
+		case "field3": case "field5":
+			data = new StringByteIterator(Integer.toString((new Random().nextInt())));
+			break;
+		case "field4": 
+			data = new StringByteIterator(Integer.toString((new Random().nextInt(10))));
+			break;
+		case "field6":
+			data = new StringByteIterator(loremIpsum.getWords(length, r.nextInt(10)));
+			break;
+		default:
+			break;
+		}
+		return data;
 	}
 
 	/**
@@ -669,48 +687,48 @@ public class CoreWorkload extends Workload {
 		case "SCAN":
 			doTransactionScan(db);
 			break;
-			//		case "ELEMENTCONTAINSSENTENCE":
-			//			doTransactionElementContainsSentence(db);
-			//			break;
-			//		case "SEARCHENTRYCONTAININGSENTENCEP":
-			//			doTransactionSearchEntryContainingSentence(db);
-			//			break;
-			//		case "INCR":
-			//			doTransactionIncr(db);
-			//			break;
+		case "ELEMENTCONTAINSSENTENCE":
+			doTransactionElementContainsSentence(db);
+			break;
+		case "SEARCHENTRYCONTAININGSENTENCEP":
+			doTransactionSearchEntryContainingSentence(db);
+			break;
+		case "INCR":
+			doTransactionIncr(db);
+			break;
 		case "SUM":
 			doTransactionSum(db);
 			break;
-			//		case "SUMALL":
-			//			doTransactionSumAll(db);
-			//			break;
-			//		case "MULTCONST":
-			//			doTransactionMultConst(db);
-			//			break;
-			//		case "MULT":
-			//			doTransactionMult(db);
-			//			break;
-			//		case "MULTALL":
-			//			doTransactionMultAll(db);
-			//			break;
-			//		case "SEARCHELEMENT":
-			//			doTransactionSearchElement(db);
-			//			break;
-			//		case "SEARCHENTRY":
-			//			doTransactionSearchEntry(db);
-			//			break;
-			//		case "ORDERENTRYS":
-			//			doTransactionOrderEntrys(db);
-			//			break;
-			//		case "SEARCHGREATERTHAN":
-			//			doTransactionSearchGreaterThan(db);
-			//			break;
-			//		case "SEARCHLESSERTHAN":
-			//			doTransactionSearchLesserThan(db);
-			//			break;
-			//		case "VALUEGREATERTHAN":
-			//			doTransactionValuegreaterThan(db);
-			//			break;
+		case "SUMALL":
+			doTransactionSumAll(db);
+			break;
+		case "MULTCONST":
+			doTransactionMultConst(db);
+			break;
+		case "MULT":
+			doTransactionMult(db);
+			break;
+		case "MULTALL":
+			doTransactionMultAll(db);
+			break;
+		case "SEARCHELEMENT":
+			doTransactionSearchElement(db);
+			break;
+		case "SEARCHENTRY":
+			doTransactionSearchEntry(db);
+			break;
+		case "ORDERENTRYS":
+			doTransactionOrderEntrys(db);
+			break;
+		case "SEARCHGREATERTHAN":
+			doTransactionSearchGreaterThan(db);
+			break;
+		case "SEARCHLESSERTHAN":
+			doTransactionSearchLesserThan(db);
+			break;
+		case "VALUEGREATERTHAN":
+			doTransactionValuegreaterThan(db);
+			break;
 		default:
 			doTransactionReadModifyWrite(db);
 		}
@@ -718,22 +736,131 @@ public class CoreWorkload extends Workload {
 		return true;
 	}
 
+	private void doTransactionElementContainsSentence(DB db) {
+
+		long keynum = nextKeynum();
+		String keyname = buildKeyName(keynum);
+		Random r = new Random();
+		String word = loremIpsum.getWords(r.nextInt(10), r.nextInt(10));
+		db.elementContainsSentence(keyname, "field6", word);
+	}
+
+	private void doTransactionSearchEntryContainingSentence(DB db) {
+
+		Random r = new Random();
+		String word = loremIpsum.getWords(r.nextInt(10), r.nextInt(10));
+		db.searchEntryContainingSentence("field6", word);
+	}
+
+	private void doTransactionIncr(DB db) {
+
+		long keynum = nextKeynum();
+		String keyname = buildKeyName(keynum);
+		String field = "field2";
+		Random r = new Random();
+		int value = r.nextInt();
+		db.incr(keyname, field, value);
+	}
+
 	public void doTransactionSum(DB db) {
-		long startTime = System.nanoTime();
 		// choose a random key
 		long keynum = nextKeynum();
 		long keynum2 = nextKeynum();
-		System.err.println("soma transation");
+
 
 		String keyname = buildKeyName(keynum);
 		String keyname2 = buildKeyName(keynum2);
 
 		String field = "field2";
 		db.sum(keyname, field, keyname2);
-		long endTime = System.nanoTime();
+
 
 
 	}
+
+	private void doTransactionSumAll(DB db) {
+
+		String field = "field2";
+		db.sumAll(field);
+	}
+
+	private void doTransactionMultConst(DB db) {
+
+		long keynum = nextKeynum();
+		String keyname = buildKeyName(keynum);
+		String field = "field2";
+		Random r = new Random();
+		int constant = r.nextInt(100);
+		db.multConst(keyname, field, constant);
+	}
+
+	private void doTransactionMult(DB db) {
+
+		long keynum = nextKeynum();
+		long keynum2 = nextKeynum();
+
+
+		String keyname = buildKeyName(keynum);
+		String keyname2 = buildKeyName(keynum2);
+
+		String field = "field4";
+		db.mult(keyname, field, keyname2);
+	}
+
+	private void doTransactionMultAll(DB db) {
+
+		String field = "field4";
+		db.multAll(field);
+	}
+
+	private void doTransactionSearchElement(DB db) {
+
+		ByteIterator word = buildSingleValue("field1");
+		db.searchElement("field1", word.toString());
+	}
+
+	private void doTransactionSearchEntry(DB db) {
+
+		HashMap<String, ByteIterator> values = buildValues("");
+		Map<String, String> set = StringByteIterator.getStringMap(values);
+		db.searchEntry(set);
+	}
+
+	private void doTransactionOrderEntrys(DB db) {
+
+		String field = "field5";
+		db.orderEntrys(field);
+	}
+
+	private void doTransactionSearchGreaterThan(DB db) {
+
+		String field = "field5";
+		Random r = new Random();
+		int value = r.nextInt();
+		db.searchGreaterThan(field, value);
+	}
+
+	private void doTransactionSearchLesserThan(DB db) {
+
+		String field = "field5";
+		Random r = new Random();
+		int value = r.nextInt();
+		db.searchLesserThan(field, value);
+	}
+
+	private void doTransactionValuegreaterThan(DB db) {
+
+		long keynum = nextKeynum();
+		long keynum2 = nextKeynum();
+
+
+		String keyname = buildKeyName(keynum);
+		String keyname2 = buildKeyName(keynum2);
+		String field = "field5";
+		db.valuegreaterThan(keyname, field, keyname2);
+	}
+
+
 
 	/**
 	 * Results are reported in the first three buckets of the histogram under
@@ -826,7 +953,7 @@ public class CoreWorkload extends Workload {
 			values = buildValues(keyname);
 		} else {
 			// update a random field
-			values = buildSingleValue(keyname);
+			values = buildSingleValueOld(keyname);
 		}
 
 		// do the transaction
@@ -885,7 +1012,7 @@ public class CoreWorkload extends Workload {
 			values = buildValues(keyname);
 		} else {
 			// update a random field
-			values = buildSingleValue(keyname);
+			values = buildSingleValueOld(keyname);
 		}
 
 		db.update(table, keyname, values);

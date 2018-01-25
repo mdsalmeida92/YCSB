@@ -586,10 +586,10 @@ public class CoreWorkload extends Workload {
 			data = new StringByteIterator(loremIpsum.getWords(length, r.nextInt(10)));
 			break;
 		case "field3": case "field5":
-			data = new StringByteIterator(Integer.toString((new Random().nextInt(100))));
+			data = new StringByteIterator(Integer.toString(2+(new Random().nextInt(100))));
 			break;
 		case "field4": 
-			data = new StringByteIterator(Integer.toString((new Random().nextInt(10))));
+			data = new StringByteIterator(Integer.toString(2+(new Random().nextInt(10))));
 			break;
 		case "field6":
 			data = new StringByteIterator(loremIpsum.getWords(length, r.nextInt(10)));
@@ -759,7 +759,7 @@ public class CoreWorkload extends Workload {
 		String keyname = buildKeyName(keynum);
 		String field = "field3";
 		Random r = new Random();
-		int value = r.nextInt();
+		int value = r.nextInt(100);
 		db.incr(keyname, field, value);
 	}
 
@@ -931,9 +931,6 @@ public class CoreWorkload extends Workload {
 		System.err.println("read Transaction");
 		db.read(table, keyname, fields, cells);
 
-		if (dataintegrity) {
-			verifyRow(keyname, cells);
-		}
 	}
 
 	public void doTransactionReadModifyWrite(DB db) {

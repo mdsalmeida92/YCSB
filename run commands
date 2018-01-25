@@ -12,3 +12,7 @@ Run the workload test:
 run server:
 java -Djavax.net.ssl.keyStore=server.jks -Djavax.net.ssl.keyStorePassword=changeme -jar AppServer.jar
 
+
+intall jar in maven
+mvn install:install-file -Dfile=/home/mario/eclipse-workspace/MasterSlaveRedis/target/MasterSlaveRedis-0.0.1-SNAPSHOT.jar
+

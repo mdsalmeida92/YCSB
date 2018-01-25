@@ -95,13 +95,15 @@ public class RedisClient extends DB {
 
 		//ENCRYPTED
 		if("E".equals(encryption)) {
-			client= new clientMasterSlave("https://"+host+":"+port+"/",SecurityType.ENCRYPTED, "" ,mapping);
+			client= new clientMasterSlave("https://"+host+":"+port+"/",SecurityType.ENCRYPTED, "chave" ,mapping);
+			System.err.println("E");
 		}
 
 
 		//ENHACED ENCRYPTED
 		if("EE".equals(encryption)) {
-			client= new clientMasterSlave("https://"+host+":"+port+"/", SecurityType.ENHANCED_ENCRYPTED, "" ,mapping);
+			client= new clientMasterSlave("https://"+host+":"+port+"/", SecurityType.ENHANCED_ENCRYPTED, "chave" ,mapping);
+			System.err.println("EE");
 		}
 
 	}
@@ -125,21 +127,15 @@ public class RedisClient extends DB {
 	@Override
 	public Status read(String table, String key, Set<String> fields,
 			Map<String, ByteIterator> result) {
-		System.err.println("read redis");
+		System.err.println("read redis" + key);
 		try {
-			if (fields == null) {
-
-				StringByteIterator.putAllAsByteIterators(result, client.getSet(key).get());
-
-			} else {
-				for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
-					String field = (String) iterator.next();
-					;
-					result.put(field,new StringByteIterator(client.getElement(key, field).get()));
-				}
+			Map<String, String> map = client.getSet(key).get();
+			for (Entry<String, String> pair : map.entrySet()) {
+				System.err.println("field:  " + pair.getKey() + "    value: "+ pair.getValue());
 			}
+
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return result.isEmpty() ? Status.ERROR : Status.OK;
@@ -153,7 +149,7 @@ public class RedisClient extends DB {
 		try {
 			client.addSet(key, map);
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -172,7 +168,7 @@ public class RedisClient extends DB {
 		try {
 			client.removeSet(key);
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -204,14 +200,14 @@ public class RedisClient extends DB {
 
 		return Status.OK;
 	}
-	
+
 	@Override
 	public Status elementContainsSentence(String key, String field, String word) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.elementContainsSentence(key, field, word).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -219,11 +215,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status searchEntryContainingSentence(String field, String word) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.searchEntryContainingSentence(field, word).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -231,19 +227,22 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status incr(String key, String field, int value) {
-		// TODO Auto-generated method stub
+
 		client.incrBy(key, field, value);
 		return Status.OK;
 	}
 
 	@Override
 	public Status sum(String key1, String field, String key2) {
-		// TODO Auto-generated method stub
+
 		System.err.println("soma redis");
 		try {
+			System.err.println(key1);
+			System.err.println(field);
+			System.err.println(key2);
 			client.sum(key1, field, key2).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -251,11 +250,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status sumAll(String field) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.sumAll(field).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -263,11 +262,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status multConst(String key, String field, int constant) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.multConst(key, field, constant).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -275,11 +274,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status mult(String key1, String field, String key2) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.mult(key1, field, key2).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		};
 		return Status.OK;
@@ -287,11 +286,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status multAll(String field) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.multAll(field).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -299,11 +298,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status searchElement(String field, String value) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.searchElement(field, value).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -311,11 +310,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status searchEntry(Map<String, String> set) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.searchEntry(set).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -323,11 +322,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status orderEntrys(String field) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.orderEntrys(field).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -335,11 +334,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status searchGreaterThan(String field, int value) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.searchGreaterThan(field, value).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -347,11 +346,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status searchLesserThan(String field, int value) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.searchLesserThan(field, value).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;
@@ -359,11 +358,11 @@ public class RedisClient extends DB {
 
 	@Override
 	public Status valuegreaterThan(String key1, String field, String key2) {
-		// TODO Auto-generated method stub
+
 		try {
 			client.valuegreaterThan(key1, field, key2).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return Status.OK;

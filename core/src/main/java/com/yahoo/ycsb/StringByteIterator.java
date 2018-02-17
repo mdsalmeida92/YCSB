@@ -69,7 +69,6 @@ public class StringByteIterator extends ByteIterator {
     HashMap<String, String> ret = new HashMap<String, String>();
 
     for (Map.Entry<String, ByteIterator> entry : m.entrySet()) {
-    	System.err.println("getStringMap "+entry.getValue().toString());
       ret.put(entry.getKey(), entry.getValue().toString());
     }
     return ret;

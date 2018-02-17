@@ -160,7 +160,6 @@ public class DBWrapper extends DB {
 		try (final TraceScope span = tracer.newScope(scopeStringRead)) {
 			long ist = measurements.getIntendedtartTimeNs();
 			long st = System.nanoTime();
-			System.err.println("read wrapper");
 			Status res = db.read(table, key, fields, result);
 			long en = System.nanoTime();
 			measure("READ", res, ist, st, en);
@@ -316,7 +315,6 @@ public class DBWrapper extends DB {
 	@Override
 	public Status sum(String key1, String field, String key2) {
 		// TODO Auto-generated method stub
-		System.err.println("soma wrapper");
 		try (final TraceScope span = tracer.newScope(scopeStringSum)) {
 			long ist = measurements.getIntendedtartTimeNs();
 			long st = System.nanoTime();

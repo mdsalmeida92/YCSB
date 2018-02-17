@@ -1,3 +1,6 @@
+build ycsb:
+mvn -pl com.yahoo.ycsb:redis-binding -am clean package
+
 
 Load the data:
 ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputLoad.txt
@@ -9,8 +12,26 @@ Run the workload test:
 
 
 
-run server:
-java -Djavax.net.ssl.keyStore=server.jks -Djavax.net.ssl.keyStorePassword=changeme -jar AppServer.jar
+run test with workload 1 - serverhost 127.0.1.1 - port 8443 - normal server - redishost 127.0.0.1:
+./Benchmark.sh 127.0.1.1 8443 1 normal 127.0.0.1
+
+run test with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
+./Benchmark.sh 127.0.1.1 8443 1 replicated 127.0.0.1
+
+run test with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1:
+./Benchmark.sh 127.0.1.1 8443 1 bft 127.0.0.1
+
+run 4 BFTreplicas script:
+./BFTReplica.sh 6379 4 /home/mario/eclipse-workspace/YCSB/Server/config/
+
+run server on port 8443 with redis on port 6380:
+./Server.sh 8443 6380
+
+run BFTserver on port 8443:
+./Server.sh 8443 6380 bft
+
+
+
 
 
 intall jar in maven

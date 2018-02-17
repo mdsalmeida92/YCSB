@@ -597,7 +597,6 @@ public class CoreWorkload extends Workload {
 		default:
 			break;
 		}
-		System.err.println("field:" + fieldkey + "data: "+data);
 		return data;
 	}
 
@@ -630,7 +629,6 @@ public class CoreWorkload extends Workload {
 		int keynum = keysequence.nextValue().intValue();
 		String dbkey = buildKeyName(keynum);
 		HashMap<String, ByteIterator> values = buildValues(dbkey);
-		System.err.println("doInsert");
 		Status status;
 		int numOfRetries = 0;
 		do {
@@ -674,7 +672,6 @@ public class CoreWorkload extends Workload {
 		if(operation == null) {
 			return false;
 		}
-		System.err.println(operation);
 		switch (operation) {
 		case "READ":
 			doTransactionRead(db);
@@ -789,12 +786,11 @@ public class CoreWorkload extends Workload {
 
 		long keynum = nextKeynum();
 		String keyname = buildKeyName(keynum);
-		System.err.println("keyname, mulstconst + "+ keyname);
+
 		String field = "field3";
 		Random r = new Random();
 		int constant = r.nextInt(10);
-		System.err.println("field, mulstconst + "+ field);
-		System.err.println("constante, mulstconst + "+ constant);
+
 		db.multConst(keyname, field, constant);
 	}
 
@@ -860,8 +856,6 @@ public class CoreWorkload extends Workload {
 
 		String keyname = buildKeyName(keynum);
 		String keyname2 = buildKeyName(keynum2);
-		System.err.println("keyname + "+ keyname);
-		System.err.println("keyname2 + "+ keyname2);
 		String field = "field5";
 		db.valuegreaterThan(keyname, field, keyname2);
 	}
@@ -928,7 +922,6 @@ public class CoreWorkload extends Workload {
 		}
 
 		HashMap<String, ByteIterator> cells = new HashMap<String, ByteIterator>();
-		System.err.println("read Transaction");
 		db.read(table, keyname, fields, cells);
 
 	}

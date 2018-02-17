@@ -127,18 +127,16 @@ public class RedisClient extends DB {
 	@Override
 	public Status read(String table, String key, Set<String> fields,
 			Map<String, ByteIterator> result) {
-		System.err.println("read redis" + key);
+		Map<String, String> map = null;
 		try {
-			Map<String, String> map = client.getSet(key).get();
-			for (Entry<String, String> pair : map.entrySet()) {
-				System.err.println("field:  " + pair.getKey() + "    value: "+ pair.getValue());
-			}
+			map = client.getSet(key).get();
 
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
-		return result.isEmpty() ? Status.ERROR : Status.OK;
+		return map.isEmpty() ? Status.ERROR : Status.OK;
 	}
 
 	@Override
@@ -151,13 +149,13 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 
-		for (Map.Entry<String, String> pair : map.entrySet()) {
-			System.err.println(pair.getKey() + "    " + pair.getValue() + "ola");
-		}
-		System.err.println();
-		System.err.println(key);
+		//		for (Map.Entry<String, String> pair : map.entrySet()) {
+		//			System.err.println(pair.getKey() + "    " + pair.getValue() + "ola");
+		//		}
+
 		return Status.OK;
 
 	}
@@ -170,6 +168,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -177,9 +176,14 @@ public class RedisClient extends DB {
 	@Override
 	public Status update(String table, String key,
 			Map<String, ByteIterator> values) {
-		Map<String, String> map = StringByteIterator.getStringMap(values);
-		for (Map.Entry<String, String> pair : map.entrySet()) {
-			client.addElement(key, pair.getKey(), pair.getValue())	;
+		try {
+			Map<String, String> map = StringByteIterator.getStringMap(values);
+			for (Map.Entry<String, String> pair : map.entrySet()) {
+				client.addElement(key, pair.getKey(), pair.getValue())	;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -209,6 +213,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -221,6 +226,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -228,22 +234,26 @@ public class RedisClient extends DB {
 	@Override
 	public Status incr(String key, String field, int value) {
 
-		client.incrBy(key, field, value);
+		try {
+			client.incrBy(key, field, value);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return Status.ERROR;
+		}
+
 		return Status.OK;
 	}
 
 	@Override
 	public Status sum(String key1, String field, String key2) {
 
-		System.err.println("soma redis");
+
 		try {
-			System.err.println(key1);
-			System.err.println(field);
-			System.err.println(key2);
 			client.sum(key1, field, key2).get();
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -256,6 +266,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -268,6 +279,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -280,6 +292,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		};
 		return Status.OK;
 	}
@@ -292,6 +305,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -304,6 +318,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -316,6 +331,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -328,6 +344,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -340,6 +357,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -352,6 +370,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}
@@ -364,6 +383,7 @@ public class RedisClient extends DB {
 		} catch (InterruptedException | ExecutionException e) {
 
 			e.printStackTrace();
+			return Status.ERROR;
 		}
 		return Status.OK;
 	}

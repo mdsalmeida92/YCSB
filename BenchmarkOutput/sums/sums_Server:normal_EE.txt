@@ -1,0 +1,11 @@
+[OVERALL], RunTime(ms), 269
+[OVERALL], Throughput(ops/sec), 0.0
+[TOTAL_GCS_PS_Scavenge], Count, 1
+[TOTAL_GC_TIME_PS_Scavenge], Time(ms), 3
+[TOTAL_GC_TIME_%_PS_Scavenge], Time(%), 1.1152416356877324
+[TOTAL_GCS_PS_MarkSweep], Count, 0
+[TOTAL_GC_TIME_PS_MarkSweep], Time(ms), 0
+[TOTAL_GC_TIME_%_PS_MarkSweep], Time(%), 0.0
+[TOTAL_GCs], Count, 1
+[TOTAL_GC_TIME], Time(ms), 3
+[TOTAL_GC_TIME_%], Time(%), 1.1152416356877324

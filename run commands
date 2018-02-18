@@ -13,13 +13,13 @@ Run the workload test:
 
 
 run test with workload 1 - serverhost 127.0.1.1 - port 8443 - normal server - redishost 127.0.0.1:
-./Benchmark.sh 127.0.1.1 8443 1 normal 127.0.0.1
+./Benchmark.sh 127.0.1.1 8443 normal 127.0.0.1
 
 run test with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
-./Benchmark.sh 127.0.1.1 8443 1 replicated 127.0.0.1
+./Benchmark.sh 127.0.1.1 8443 replicated 127.0.0.1
 
 run test with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1:
-./Benchmark.sh 127.0.1.1 8443 1 bft 127.0.0.1
+./Benchmark.sh 127.0.1.1 8443 bft 127.0.0.1
 
 run 4 BFTreplicas script:
 ./BFTReplica.sh 6379 4 /home/mario/eclipse-workspace/YCSB/Server/config/

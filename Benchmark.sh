@@ -12,7 +12,7 @@ echo $server_port
 
 
 for i in workloads/* ; 
-
+do
 test=$(basename $i)
 echo $test"_"$serverType"_normal"
 

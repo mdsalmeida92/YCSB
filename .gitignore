@@ -24,3 +24,7 @@ output*
 .DS_Store
 
 *.log
+
+linux/server-6380/state/dump\.rdb
+
+*.rdb

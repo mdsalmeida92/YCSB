@@ -3,11 +3,11 @@ mvn -pl com.yahoo.ycsb:redis-binding -am clean package
 
 
 Load the data:
-./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputLoad.txt
+./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workload_templates/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > workload_templates/outputLoad.txt
 
 
 Run the workload test:
-./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > outputRun.txt
+./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workload_templates/workloada -p "redis.host=127.0.1.1" -p "redis.port=8443" > workload_templates/outputRun.txt
 
 
 

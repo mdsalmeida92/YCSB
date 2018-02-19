@@ -32,7 +32,7 @@ import com.yahoo.ycsb.Status;
 import com.yahoo.ycsb.StringByteIterator;
 
 import API.clientAPI;
-import client.clientMasterSlave;
+import client.client;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Protocol;
 import utils.Cipher;
@@ -89,20 +89,20 @@ public class RedisClient extends DB {
 
 
 		//NORMAL
-		client= new clientMasterSlave("https://"+host+":"+port+"/");
+		client= new client("https://"+host+":"+port+"/");
 		if(client == null)
 			System.err.println("esta null");
 
 		//ENCRYPTED
 		if("E".equals(encryption)) {
-			client= new clientMasterSlave("https://"+host+":"+port+"/",SecurityType.ENCRYPTED, "chave" ,mapping);
+			client= new client("https://"+host+":"+port+"/",SecurityType.ENCRYPTED, "chave" ,mapping);
 			System.err.println("E");
 		}
 
 
 		//ENHACED ENCRYPTED
 		if("EE".equals(encryption)) {
-			client= new clientMasterSlave("https://"+host+":"+port+"/", SecurityType.ENHANCED_ENCRYPTED, "chave" ,mapping);
+			client= new client("https://"+host+":"+port+"/", SecurityType.ENHANCED_ENCRYPTED, "chave" ,mapping);
 			System.err.println("EE");
 		}
 

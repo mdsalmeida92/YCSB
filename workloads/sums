@@ -33,13 +33,12 @@ readallfields=true
 
 readproportion=0
 updateproportion=0
-sumproportion=0.5
 scanproportion=0
 insertproportion=0
 elementContainsSentenceproportion=0
 searchEntryContainingSentenceproportion=0
 incrproportion=0
-sumproportion=0
+sumproportion=0.5
 sumAllproportion=0
 multConstproportion=0
 multproportion=0

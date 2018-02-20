@@ -11,14 +11,18 @@ Run the workload test:
 
 
 
+node 11 - 192.168.10.11 
+node 13 - 192.168.10.13
 
-run test with workload 1 - serverhost 127.0.1.1 - port 8443 - normal server - redishost 127.0.0.1:
+./Benchmark.sh 192.168.10.13 8443 normal 192.168.10.13
+
+run test for all workloads with - serverhost 127.0.1.1 - port 8443 - normal server - redishost 127.0.0.1:
 ./Benchmark.sh 127.0.1.1 8443 normal 127.0.0.1
 
-run test with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
+run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
 ./Benchmark.sh 127.0.1.1 8443 replicated 127.0.0.1
 
-run test with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1:
+run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1:
 ./Benchmark.sh 127.0.1.1 8443 bft 127.0.0.1
 
 run 4 BFTreplicas script:

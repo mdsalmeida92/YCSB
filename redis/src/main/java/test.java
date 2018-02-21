@@ -9,6 +9,7 @@ import utils.SecurityType;
 
 import java.awt.event.ItemEvent;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -357,7 +358,8 @@ System.err.println("mult value   "+value.get().longValue());
 		keys.add("ola1007");
 
 		List<String> l = list.get();
-
+		Collections.sort(l);
+		
 		Iterator<String> it = keys.iterator();
 		for (Iterator<String> iterator = l.iterator()  ; iterator.hasNext() && it.hasNext();) {
 			String myEntry = iterator.next();

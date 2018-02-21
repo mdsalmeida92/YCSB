@@ -140,7 +140,7 @@ public class client implements clientAPI{
 			MultkeyPair = HomoMult.keyFromString(line);
 			publicKey = (RSAPublicKey) MultkeyPair.getPublic();
 			privateKey = (RSAPrivateKey) MultkeyPair.getPrivate();	
-			
+
 			opeObject = new HomoOpeInt(key);
 
 			reader.close();
@@ -203,8 +203,9 @@ public class client implements clientAPI{
 	public Future<Map<String,String>> getSet(String key) throws InterruptedException, ExecutionException {
 		Future<Map<String,String>> future = null;
 		ExecutorService executor = Executors.newFixedThreadPool(1);
-
-
+		long begin = 0;
+		String EncKey = null;
+	
 		switch (securityType) {
 		case NORMAL:
 			Future<MyEntry> entry = target.path("server/"+key)
@@ -221,10 +222,11 @@ public class client implements clientAPI{
 
 
 			break;
-		case ENCRYPTED: case ENHANCED_ENCRYPTED:
-			long begin = getTime();
+		case ENCRYPTED:
+			 begin = getTime();
 
-			String EncKey = HomoDet.encrypt(DetKey, key);
+			 EncKey = HomoDet.encrypt(DetKey, key);
+
 			PrivacygetTime += getTime() - begin;
 
 			Future<MyEntry> entryEncrypted = target.path("server/"+EncKey)
@@ -237,12 +239,12 @@ public class client implements clientAPI{
 				public Map<String,String> call() throws InterruptedException, ExecutionException {
 					Map<String,String> map = null;
 					try {
-						
 
-					Map<String,String> m = entryEncrypted.get().getAttributes();
-					long begin = getTime();
-					map = decryptMap(m);
-					PrivacygetTime += getTime() - begin;
+
+						Map<String,String> m = entryEncrypted.get().getAttributes();
+						long begin = getTime();
+						map = decryptMap(m);
+						PrivacygetTime += getTime() - begin;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -252,6 +254,39 @@ public class client implements clientAPI{
 
 
 			break;
+		 case ENHANCED_ENCRYPTED:
+				 begin = getTime();
+				 String RandKey = HelpSerial.toString(RandomKey);
+					String iv = Base64.encodeBase64String(IV);
+				 EncKey = HomoDet.encrypt(DetKey, key);
+				PrivacygetTime += getTime() - begin;
+
+				Future<MyEntry> entryEnEncrypted = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).path("server/Encrypted/"+EncKey)
+						.request()
+						.accept(MediaType.APPLICATION_JSON)
+						.async()
+						.get(MyEntry.class);
+
+				future = executor.submit(new Callable<Map<String,String>>() {
+					public Map<String,String> call() throws InterruptedException, ExecutionException {
+						Map<String,String> map = null;
+						try {
+
+
+							Map<String,String> m = entryEnEncrypted.get().getAttributes();
+							long begin = getTime();
+							map = decryptMap(m);
+							PrivacygetTime += getTime() - begin;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						return map;
+					}});
+
+
+				break;
+			
 
 		}
 
@@ -349,7 +384,12 @@ public class client implements clientAPI{
 
 	@Override
 	public Future<String> getElement(String key, String field) {
+		ExecutorService executor = Executors.newFixedThreadPool(1);
 		Future<String> future = null;
+		long begin = 0;
+		String EncKey = null;
+		String Encfield = null;
+		
 		switch (securityType) {
 		case NORMAL:
 			future = target.queryParam("key", key).queryParam("field", field)
@@ -359,10 +399,10 @@ public class client implements clientAPI{
 			.get(String.class);
 
 			break;
-		case ENCRYPTED: case ENHANCED_ENCRYPTED:
-			long begin = getTime();
-			String EncKey = HomoDet.encrypt(DetKey, key);
-			String Encfield = HomoDet.encrypt(DetKey, field);
+		case ENCRYPTED:
+			 begin = getTime();
+			 EncKey = HomoDet.encrypt(DetKey, key);
+			 Encfield = HomoDet.encrypt(DetKey, field);
 			PrivacyGetElementTime += getTime() - begin;
 			getUrl();
 			Future<String> response = target.queryParam("key", EncKey).queryParam("field", Encfield)
@@ -371,18 +411,42 @@ public class client implements clientAPI{
 					.async()
 					.get(String.class);
 
-			ExecutorService executor = Executors.newFixedThreadPool(1);
+			
 			future = executor.submit(new Callable<String>() {
 				public String call() throws InterruptedException, ExecutionException {
 					long begin = getTime();
 					String cipherKey = response.get();
-					String DecKey = decryptValue(field,cipherKey );
+					String DecKey = decryptValue(field,cipherKey);
 					PrivacyGetElementTime += getTime() - begin;
 					return DecKey;
 				}});
 			executor.shutdown();
 			break;
+		case ENHANCED_ENCRYPTED:
+			 begin = getTime();
+			 String RandKey = HelpSerial.toString(RandomKey);
+				String iv = Base64.encodeBase64String(IV);
+			 EncKey = HomoDet.encrypt(DetKey, key);
+			 Encfield = HomoDet.encrypt(DetKey, field);
+			PrivacyGetElementTime += getTime() - begin;
+			getUrl();
+			Future<String> responseEnc = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).queryParam("key", EncKey).queryParam("field", Encfield)
+					.path("server/getElem/Encrypted")
+					.request()
+					.async()
+					.get(String.class);
 
+			
+			future = executor.submit(new Callable<String>() {
+				public String call() throws InterruptedException, ExecutionException {
+					long begin = getTime();
+					String cipherKey = responseEnc.get();
+					String DecKey = decryptValue(field,cipherKey);
+					PrivacyGetElementTime += getTime() - begin;
+					return DecKey;
+				}});
+			executor.shutdown();
+			break;
 		}
 
 		return future;
@@ -671,7 +735,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= EnEncresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field,resp ));
+					BigInteger result = new BigInteger(decryptValue(field,resp  ));
 					PrivacysumTime += getTime() - begin;
 					return result;
 				}});
@@ -711,7 +775,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= Encresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger((decryptValue(field,resp )));
+					BigInteger result = new BigInteger((decryptValue(field,resp  )));
 					PrivacysumAllTime += getTime() - begin;
 					return result;
 				}});
@@ -734,7 +798,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= EnEncresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger((decryptValue(field,resp )));
+					BigInteger result = new BigInteger((decryptValue(field,resp  )));
 					PrivacysumAllTime += getTime() - begin;
 					return result;
 				}});
@@ -781,7 +845,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= Encresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field, resp));
+					BigInteger result = new BigInteger(decryptValue(field, resp ));
 					PrivacysumConstTime += getTime() - begin;
 					return result;
 				}});
@@ -804,7 +868,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= EnEncresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field, resp));
+					BigInteger result = new BigInteger(decryptValue(field, resp ));
 					PrivacysumConstTime += getTime() - begin;
 					return result;
 				}});
@@ -853,7 +917,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= Encresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field, resp));
+					BigInteger result = new BigInteger(decryptValue(field, resp ));
 					PrivacymultTime += getTime() - begin;
 					return result;
 				}});
@@ -879,7 +943,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= EnEncresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field, resp));
+					BigInteger result = new BigInteger(decryptValue(field, resp ));
 					PrivacymultTime += getTime() - begin;
 					return result;
 				}});
@@ -920,7 +984,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= Encresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field,resp ));
+					BigInteger result = new BigInteger(decryptValue(field,resp  ));
 					PrivacymultAllTime += getTime() - begin;
 					return result;
 				}});
@@ -941,7 +1005,7 @@ public class client implements clientAPI{
 				public BigInteger call() throws InterruptedException, ExecutionException {
 					String resp= EnEncresponse.get();
 					long begin = getTime();
-					BigInteger result = new BigInteger(decryptValue(field,resp ));
+					BigInteger result = new BigInteger(decryptValue(field,resp  ));
 					PrivacymultAllTime += getTime() - begin;
 					return result;
 				}});
@@ -1476,21 +1540,8 @@ public class client implements clientAPI{
 	} 
 
 	private String decryptValue (String field, String encElem) {
-		String EncElem = null;
-		switch (securityType) {
-		case NORMAL:
+		String EncElem = encElem;
 
-			break;
-		case ENCRYPTED:
-			EncElem = encElem;
-			break;
-		case ENHANCED_ENCRYPTED:
-			EncElem = HomoRand.decrypt(RandomKey,IV, encElem);
-			break;
-
-		default:
-			break;
-		}
 
 		String value = null;
 		Cipher c = null;

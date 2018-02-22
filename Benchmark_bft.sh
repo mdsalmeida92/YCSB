@@ -7,7 +7,7 @@ server_port="redis.port="$2
 serverType="Server:"$3
 redis_host=$4
 x=$5
-redis_port=6380
+redis_port=6379
 
 echo $server_host
 echo $server_port

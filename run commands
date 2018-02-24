@@ -24,8 +24,9 @@ run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - 
 ./Benchmark.sh 127.0.1.1 8443 replicated 127.0.0.1
 
 run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1:
-./Benchmark.sh 127.0.1.1 8443 bft 127.0.0.1
-./Benchmark.sh 192.168.10.13 8443 bft 192.168.10.13
+./Benchmark_bft.sh 127.0.1.1 8443 bft 127.0.0.1
+./Benchmark_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4
+
 
 run 4 BFTreplicas script:
 ./BFTReplica.sh 6379 4 /home/mario/eclipse-workspace/YCSB/Server/config/
@@ -40,6 +41,7 @@ run BFTserver on port 8443:
 
 
 
+redis-server /localhome/mdsalmeida/YCSB/linux/redis_bft.conf --port 6379 &
 
 
 intall jar in maven

@@ -17,6 +17,7 @@ do
 $redis_cli -h $redis_host -p $redis_port flushall
 ((redis_port++))
 done
+redis_port=6379
 
 ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/all -p $server_host -p $server_port > outputLoad.txt
 
@@ -34,6 +35,7 @@ do
 $redis_cli -h $redis_host -p $redis_port flushall
 ((redis_port++))
 done
+redis_port=6379
 
 ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/all -p $server_host -p $server_port -p "redis.encryption=E" > outputLoad.txt
 
@@ -52,6 +54,7 @@ do
 $redis_cli -h $redis_host -p $redis_port flushall
 ((redis_port++))
 done
+redis_port=6379
 
 ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/all -p $server_host -p $server_port -p "redis.encryption=EE" > outputLoad.txt
 
@@ -70,3 +73,4 @@ do
 $redis_cli -h $redis_host -p $redis_port flushall
 ((redis_port++))
 done
+redis_port=6379

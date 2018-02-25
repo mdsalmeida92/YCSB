@@ -1,0 +1,7 @@
+java.lang.NullPointerException
+	at com.yahoo.ycsb.db.RedisClient.read(RedisClient.java:139)
+	at com.yahoo.ycsb.DBWrapper.read(DBWrapper.java:163)
+	at com.yahoo.ycsb.workloads.CoreWorkload.doTransactionRead(CoreWorkload.java:925)
+	at com.yahoo.ycsb.workloads.CoreWorkload.doTransaction(CoreWorkload.java:677)
+	at com.yahoo.ycsb.ClientThread.run(Client.java:454)
+	at java.lang.Thread.run(Thread.java:748)

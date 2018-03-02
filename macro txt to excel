@@ -1,0 +1,47 @@
+Sub LoadPipeDelimitedFiles()
+    Dim idx As Integer
+    Dim fpath As String
+    Dim fname As String
+
+    idx = 0
+    fpath = "C:\Users\mdsal\OneDrive\Ambiente de Trabalho\Nova pasta\"
+    fname = Dir(fpath & "*.txt")
+    While (Len(fname) > 0)
+        idx = idx + 1
+        Sheets.Add
+        ActiveSheet.Name = fname
+        With ActiveSheet.QueryTables.Add(Connection:="TEXT;" _
+          & fpath & fname, Destination:=Range("A1"))
+            .Name = "a" & idx
+            .FieldNames = True
+            .RowNumbers = False
+            .FillAdjacentFormulas = False
+            .PreserveFormatting = True
+            .RefreshOnFileOpen = False
+            .RefreshStyle = xlInsertDeleteCells
+            .SavePassword = False
+            .SaveData = True
+            .AdjustColumnWidth = True
+            .RefreshPeriod = 0
+            .TextFilePromptOnRefresh = False
+            .TextFilePlatform = 437
+            .TextFileStartRow = 1
+            .TextFileParseType = xlDelimited
+            .TextFileTextQualifier = xlTextQualifierDoubleQuote
+            .TextFileConsecutiveDelimiter = False
+            .TextFileTabDelimiter = False
+            .TextFileSemicolonDelimiter = False
+            .TextFileCommaDelimiter = True
+            .TextFileSpaceDelimiter = False
+            .TextFileOtherDelimiter = "|"
+            .TextFileColumnDataTypes = Array(1, 1, 1)
+            .TextFileTrailingMinusNumbers = True
+            .Refresh BackgroundQuery:=False
+            fname = Dir
+        End With
+    Wend
+End Sub
+
+
+
+

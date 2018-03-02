@@ -1,0 +1,2 @@
+java.lang.NullPointerException
+	at com.yahoo.ycsb.db.RedisClient.read(RedisClient.java:139)

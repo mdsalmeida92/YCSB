@@ -21,7 +21,7 @@ run test for all workloads with - serverhost 127.0.1.1 - port 8443 - normal serv
 ./Benchmark.sh 127.0.1.1 8443 normal 127.0.0.1
 ./Benchmark.sh 192.168.10.13 8443 normal 192.168.10.13
 
-./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 90reads_10puts 90reads_10puts
+./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 90reads_10puts 
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 gets_puts_update
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 inserts
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 puts_gets
@@ -44,6 +44,11 @@ mkdir puts_gets
 run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1 com 4 replicas:
 ./Benchmark_bft.sh 127.0.1.1 8443 bft 127.0.0.1
 ./Benchmark_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4
+
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 90reads_10puts
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 gets_puts_update
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 inserts
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 puts_gets
 
 
 run 4 BFTreplicas script:

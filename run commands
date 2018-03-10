@@ -26,6 +26,8 @@ run test for all workloads with - serverhost 127.0.1.1 - port 8443 - normal serv
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 inserts
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 puts_gets
 
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 90reads_10puts
+
 
 run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
 ./Benchmark.sh 127.0.1.1 8443 replicated 127.0.0.1
@@ -46,14 +48,25 @@ run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - 
 ./Benchmark_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4
 
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 90reads_10puts
+./BenchmarkXTest_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4 90reads_10puts
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 gets_puts_update
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 inserts
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 puts_gets
 
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_byzantine10
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_byzantine50
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_byzantine90
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_byzantine100
+
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_crash1
+./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_crash2
+
+java -jar Server/BFTreplica.jar -port 6382 -id 3 -path /localhome/mdsalmeida/YCSB/config -byzantine 10
 
 run 4 BFTreplicas script:
 ./BFTReplica.sh 6379 4 /home/mario/eclipse-workspace/YCSB/Server/config/
 ./BFTReplica.sh 6379 4 /localhome/mdsalmeida/YCSB/config
+./BFTReplica.sh 6379 4 /home/YCSB/config
 
 
 run server on port 8443 with redis on port 6380:

@@ -205,35 +205,35 @@ public class client implements clientAPI{
 		ExecutorService executor = Executors.newFixedThreadPool(1);
 		long begin = 0;
 		String EncKey = null;
-	
+
 		switch (securityType) {
 		case NORMAL:
-			Future<MyEntry> entry = target.path("server/"+key)
+			Future<Response> entry = target.path("server/"+key)
 			.request()
 			.accept(MediaType.APPLICATION_JSON)
 			.async()
-			.get(MyEntry.class);
+			.get();
 
 
 			future = executor.submit(new Callable<Map<String,String>>() {
 				public Map<String,String> call() throws InterruptedException, ExecutionException {
-					return entry.get().getAttributes();
+					return entry.get().readEntity(MyEntry.class).getAttributes();
 				}});
 
 
 			break;
 		case ENCRYPTED:
-			 begin = getTime();
+			begin = getTime();
 
-			 EncKey = HomoDet.encrypt(DetKey, key);
+			EncKey = HomoDet.encrypt(DetKey, key);
 
 			PrivacygetTime += getTime() - begin;
 
-			Future<MyEntry> entryEncrypted = target.path("server/"+EncKey)
+			Future<Response> entryEncrypted = target.path("server/"+EncKey)
 					.request()
 					.accept(MediaType.APPLICATION_JSON)
 					.async()
-					.get(MyEntry.class);
+					.get();
 
 			future = executor.submit(new Callable<Map<String,String>>() {
 				public Map<String,String> call() throws InterruptedException, ExecutionException {
@@ -241,7 +241,7 @@ public class client implements clientAPI{
 					try {
 
 
-						Map<String,String> m = entryEncrypted.get().getAttributes();
+						Map<String,String> m = entryEncrypted.get().readEntity(MyEntry.class).getAttributes();
 						long begin = getTime();
 						map = decryptMap(m);
 						PrivacygetTime += getTime() - begin;
@@ -254,39 +254,39 @@ public class client implements clientAPI{
 
 
 			break;
-		 case ENHANCED_ENCRYPTED:
-				 begin = getTime();
-				 String RandKey = HelpSerial.toString(RandomKey);
-					String iv = Base64.encodeBase64String(IV);
-				 EncKey = HomoDet.encrypt(DetKey, key);
-				PrivacygetTime += getTime() - begin;
+		case ENHANCED_ENCRYPTED:
+			begin = getTime();
+			String RandKey = HelpSerial.toString(RandomKey);
+			String iv = Base64.encodeBase64String(IV);
+			EncKey = HomoDet.encrypt(DetKey, key);
+			PrivacygetTime += getTime() - begin;
 
-				Future<MyEntry> entryEnEncrypted = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).path("server/Encrypted/"+EncKey)
-						.request()
-						.accept(MediaType.APPLICATION_JSON)
-						.async()
-						.get(MyEntry.class);
+			Future<Response> entryEnEncrypted = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).path("server/Encrypted/"+EncKey)
+					.request()
+					.accept(MediaType.APPLICATION_JSON)
+					.async()
+					.get();
 
-				future = executor.submit(new Callable<Map<String,String>>() {
-					public Map<String,String> call() throws InterruptedException, ExecutionException {
-						Map<String,String> map = null;
-						try {
-
-
-							Map<String,String> m = entryEnEncrypted.get().getAttributes();
-							long begin = getTime();
-							map = decryptMap(m);
-							PrivacygetTime += getTime() - begin;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-
-						return map;
-					}});
+			future = executor.submit(new Callable<Map<String,String>>() {
+				public Map<String,String> call() throws InterruptedException, ExecutionException {
+					Map<String,String> map = null;
+					try {
 
 
-				break;
-			
+						Map<String,String> m = entryEnEncrypted.get().readEntity(MyEntry.class).getAttributes();
+						long begin = getTime();
+						map = decryptMap(m);
+						PrivacygetTime += getTime() - begin;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					return map;
+				}});
+
+
+			break;
+
 
 		}
 
@@ -389,33 +389,40 @@ public class client implements clientAPI{
 		long begin = 0;
 		String EncKey = null;
 		String Encfield = null;
-		
+
 		switch (securityType) {
 		case NORMAL:
-			future = target.queryParam("key", key).queryParam("field", field)
+			Future<Response> response1 = target.queryParam("key", key).queryParam("field", field)
 			.path("server/getElem")
 			.request()
 			.async()
-			.get(String.class);
-
-			break;
-		case ENCRYPTED:
-			 begin = getTime();
-			 EncKey = HomoDet.encrypt(DetKey, key);
-			 Encfield = HomoDet.encrypt(DetKey, field);
-			PrivacyGetElementTime += getTime() - begin;
-			getUrl();
-			Future<String> response = target.queryParam("key", EncKey).queryParam("field", Encfield)
-					.path("server/getElem")
-					.request()
-					.async()
-					.get(String.class);
-
+			.get();
 			
 			future = executor.submit(new Callable<String>() {
 				public String call() throws InterruptedException, ExecutionException {
 					long begin = getTime();
-					String cipherKey = response.get();
+					return response1.get().readEntity(String.class);
+				}});
+			executor.shutdown();
+
+			break;
+		case ENCRYPTED:
+			begin = getTime();
+			EncKey = HomoDet.encrypt(DetKey, key);
+			Encfield = HomoDet.encrypt(DetKey, field);
+			PrivacyGetElementTime += getTime() - begin;
+			getUrl();
+			Future<Response> response = target.queryParam("key", EncKey).queryParam("field", Encfield)
+					.path("server/getElem")
+					.request()
+					.async()
+					.get();
+
+
+			future = executor.submit(new Callable<String>() {
+				public String call() throws InterruptedException, ExecutionException {
+					long begin = getTime();
+					String cipherKey = response.get().readEntity(String.class);
 					String DecKey = decryptValue(field,cipherKey);
 					PrivacyGetElementTime += getTime() - begin;
 					return DecKey;
@@ -423,24 +430,24 @@ public class client implements clientAPI{
 			executor.shutdown();
 			break;
 		case ENHANCED_ENCRYPTED:
-			 begin = getTime();
-			 String RandKey = HelpSerial.toString(RandomKey);
-				String iv = Base64.encodeBase64String(IV);
-			 EncKey = HomoDet.encrypt(DetKey, key);
-			 Encfield = HomoDet.encrypt(DetKey, field);
+			begin = getTime();
+			String RandKey = HelpSerial.toString(RandomKey);
+			String iv = Base64.encodeBase64String(IV);
+			EncKey = HomoDet.encrypt(DetKey, key);
+			Encfield = HomoDet.encrypt(DetKey, field);
 			PrivacyGetElementTime += getTime() - begin;
 			getUrl();
-			Future<String> responseEnc = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).queryParam("key", EncKey).queryParam("field", Encfield)
+			Future<Response> responseEnc = target.queryParam("iv", iv).queryParam("RandomKey", RandKey).queryParam("key", EncKey).queryParam("field", Encfield)
 					.path("server/getElem/Encrypted")
 					.request()
 					.async()
-					.get(String.class);
+					.get();
 
-			
+
 			future = executor.submit(new Callable<String>() {
 				public String call() throws InterruptedException, ExecutionException {
 					long begin = getTime();
-					String cipherKey = responseEnc.get();
+					String cipherKey = responseEnc.get().readEntity(String.class);
 					String DecKey = decryptValue(field,cipherKey);
 					PrivacyGetElementTime += getTime() - begin;
 					return DecKey;

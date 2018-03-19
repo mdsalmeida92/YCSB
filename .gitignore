@@ -28,3 +28,5 @@ output*
 linux/server-6380/state/dump\.rdb
 
 *.rdb
+
+*.aof

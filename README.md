@@ -18,60 +18,77 @@ LICENSE file.
 
 Yahoo! Cloud System Benchmark (YCSB)
 ====================================
-[![Build Status](https://travis-ci.org/brianfrankcooper/YCSB.png?branch=master)](https://travis-ci.org/brianfrankcooper/YCSB)
 
-Links
------
-http://wiki.github.com/brianfrankcooper/YCSB/  
-https://labs.yahoo.com/news/yahoo-cloud-serving-benchmark/
-ycsb-users@yahoogroups.com  
+Install redis, Java and Maven
+--------------------------------
 
-Getting Started
----------------
 
-1. Download the [latest release of YCSB](https://github.com/brianfrankcooper/YCSB/releases/latest):
+Start Server
+--------------------------------
 
-    ```sh
-    curl -O --location https://github.com/brianfrankcooper/YCSB/releases/download/0.12.0/ycsb-0.12.0.tar.gz
-    tar xfvz ycsb-0.12.0.tar.gz
-    cd ycsb-0.12.0
-    ```
+use Script Server.sh but check https://github.com/mdsalmeida92/SearchableEncryptedRedis/blob/master/README.md for redis and replicas startup
+
+**$server_port** : server port
+**$redis_port**: redis database port
+**$type**: type of server -> "bft" for BFT server nothing if otherwise
+
+    ./Server.sh $server_port $redis_port $type
     
-2. Set up a database to benchmark. There is a README file under each binding 
-   directory.
+examples:
 
-3. Run YCSB command. 
+    run server on port 8443 with redis on port 6380:
+    ./Server.sh 8443 6380
+    
+    run BFTserver on port 8443:
+    ./Server.sh 8443 6379 bft
 
-    On Linux:
-    ```sh
-    bin/ycsb.sh load basic -P workloads/workloada
-    bin/ycsb.sh run basic -P workloads/workloada
-    ```
+Load data and run tests
+--------------------------------
 
-    On Windows:
-    ```bat
-    bin/ycsb.bat load basic -P workloads\workloada
-    bin/ycsb.bat run basic -P workloads\workloada
-    ```
+Set the server host and port:
 
-  Running the `ycsb` command without any argument will print the usage. 
-   
-  See https://github.com/brianfrankcooper/YCSB/wiki/Running-a-Workload
-  for a detailed documentation on how to run a workload.
+server_host="redis.host="$1
+server_port="redis.port="$2
 
-  See https://github.com/brianfrankcooper/YCSB/wiki/Core-Properties for 
-  the list of available workload properties.
+Load the data:
 
-Building from source
---------------------
+    ./bin/ycsb load redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/all -p $server_host -p $server_port > outputLoad.txt
 
-YCSB requires the use of Maven 3; if you use Maven 2, you may see [errors
-such as these](https://github.com/brianfrankcooper/YCSB/issues/406).
+Run the workload test:
+No encryption
 
-To build the full distribution, with all database bindings:
+    ./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/$test -p $server_host -p $server_port > outputRun.txt
+    
+Homomorphic encryption
 
-    mvn clean package
+    ./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/$test -p $server_host -p $server_port -p "redis.encryption=E" > outputRun.txt
+    
+Homomorphic encryption + onion encryption
 
-To build a single database binding:
+    ./bin/ycsb run redis -jvm-args="-Djavax.net.ssl.trustStore=client.jks -Djavax.net.ssl.trustStorePassword=changeme" -s -P workloads/$test -p $server_host -p $server_port -p "redis.encryption=EE" > outputRun.txt
+    
+Scripts for running tests
+--------------------------------
 
-    mvn -pl com.yahoo.ycsb:mongodb-binding -am clean package
+runs every workload in folder /workloads in server with ip 137.74.92.78 and port 8443
+
+    ./Benchmark.sh 137.74.92.78 8443 normal 137.74.92.78
+
+runs workload "inserts" in folder /workloads in server with ip 137.74.92.78 and port 8443
+
+    ./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 inserts
+
+BFT test
+runs every workload in folder /workloads for a BFTServer with ip 137.74.92.78 and port 8443
+
+    ./Benchmark_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4
+    
+runs workload "inserts" in folder /workloads for a BFTServer with ip 137.74.92.78 and port 8443
+
+    ./BenchmarkXTest_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4 inserts
+
+
+
+
+
+

@@ -423,10 +423,6 @@ public class CoreWorkload extends Workload {
 				Long.parseLong(p.getProperty(FIELD_COUNT_PROPERTY, FIELD_COUNT_PROPERTY_DEFAULT));
 		fieldnames = new ArrayList<>();
 		for (int i = 1; i <= fieldcount; i++) {
-			if(i!=3) {
-				;
-			}
-			else 
 			fieldnames.add("field" + i);
 		}
 		fieldlengthgenerator = CoreWorkload.getFieldLengthGenerator(p);
@@ -581,6 +577,22 @@ public class CoreWorkload extends Workload {
 		return values;
 	}
 	
+	private HashMap<String, ByteIterator> buildValuesWithoutX(String key, String field) {
+		HashMap<String, ByteIterator> values = new HashMap<>();
+
+		for (String fieldkey : fieldnames) {
+			if(fieldkey.equals("field3")) {
+				;
+			}
+			else {
+			ByteIterator data = buildSingleValue(fieldkey);
+			values.put(fieldkey, data);
+			}
+			
+		}
+		return values;
+	}
+	
 	private ByteIterator buildSingleValue(String fieldkey) {
 		ByteIterator data = null;
 		Random r = new Random();
@@ -632,7 +644,7 @@ public class CoreWorkload extends Workload {
 	public boolean doInsert(DB db, Object threadstate) {
 		int keynum = keysequence.nextValue().intValue();
 		String dbkey = buildKeyName(keynum);
-		HashMap<String, ByteIterator> values = buildValues(dbkey);
+		HashMap<String, ByteIterator> values = buildValuesWithoutX(dbkey,"field3");
 		Status status;
 		int numOfRetries = 0;
 		do {
@@ -1025,7 +1037,7 @@ public class CoreWorkload extends Workload {
 		try {
 			String dbkey = buildKeyName(keynum);
 
-			HashMap<String, ByteIterator> values = buildValues(dbkey);
+			HashMap<String, ByteIterator> values = buildValuesWithoutX(dbkey,"field3");
 			db.insert(table, dbkey, values);
 		} finally {
 			transactioninsertkeysequence.acknowledge(keynum);

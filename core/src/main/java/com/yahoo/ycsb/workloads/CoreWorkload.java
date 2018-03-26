@@ -423,6 +423,10 @@ public class CoreWorkload extends Workload {
 				Long.parseLong(p.getProperty(FIELD_COUNT_PROPERTY, FIELD_COUNT_PROPERTY_DEFAULT));
 		fieldnames = new ArrayList<>();
 		for (int i = 1; i <= fieldcount; i++) {
+			if(i!=3) {
+				;
+			}
+			else 
 			fieldnames.add("field" + i);
 		}
 		fieldlengthgenerator = CoreWorkload.getFieldLengthGenerator(p);

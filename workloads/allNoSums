@@ -32,24 +32,24 @@ workload=com.yahoo.ycsb.workloads.CoreWorkload
 readallfields=true
 
 readproportion=0.5
-updateproportion=0
+updateproportion=0.5
 sumproportion=0
 scanproportion=0
-insertproportion=0
-elementContainsSentenceproportion=0
-searchEntryContainingSentenceproportion=0
+insertproportion=0.5
+elementContainsSentenceproportion=0.5
+searchEntryContainingSentenceproportion=0.5
 incrproportion=0
 sumproportion=0
 sumAllproportion=0
 multConstproportion=0
-multproportion=0
-multAllproportion=0
-searchElementproportion=0
-searchEntryproportion=0
-orderEntrysproportion=0
-searchGreaterThanproportion=0
-searchLesserThanproportion=0
-valuegreaterThanproportion=0
+multproportion=0.5
+multAllproportion=0.5
+searchElementproportion=0.5
+searchEntryproportion=0.5
+orderEntrysproportion=0.5
+searchGreaterThanproportion=0.5
+searchLesserThanproportion=0.5
+valuegreaterThanproportion=0.5
 
 requestdistribution=zipfian
 

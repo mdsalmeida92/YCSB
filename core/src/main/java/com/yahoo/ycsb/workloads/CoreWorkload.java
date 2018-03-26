@@ -644,7 +644,7 @@ public class CoreWorkload extends Workload {
 	public boolean doInsert(DB db, Object threadstate) {
 		int keynum = keysequence.nextValue().intValue();
 		String dbkey = buildKeyName(keynum);
-		HashMap<String, ByteIterator> values = buildValuesWithoutX(dbkey,"field3");
+		HashMap<String, ByteIterator> values = buildValues(dbkey);
 		Status status;
 		int numOfRetries = 0;
 		do {
@@ -1037,7 +1037,7 @@ public class CoreWorkload extends Workload {
 		try {
 			String dbkey = buildKeyName(keynum);
 
-			HashMap<String, ByteIterator> values = buildValuesWithoutX(dbkey,"field3");
+			HashMap<String, ByteIterator> values = buildValues(dbkey);
 			db.insert(table, dbkey, values);
 		} finally {
 			transactioninsertkeysequence.acknowledge(keynum);

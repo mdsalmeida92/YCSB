@@ -1,0 +1,6 @@
+rhyper.c: afc(i)+ i=%d < 0 -- SHOULD NOT HAPPEN!
+-33813.0
+rhyper.c: afc(i)+ i=%d < 0 -- SHOULD NOT HAPPEN!
+-11.0
+rhyper.c: afc(i)+ i=%d < 0 -- SHOULD NOT HAPPEN!
+-8.0

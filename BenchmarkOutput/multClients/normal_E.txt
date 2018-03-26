@@ -1,3 +1,5 @@
+rhyper.c: afc(i)+ i=%d < 0 -- SHOULD NOT HAPPEN!
+-155603.0
 java.lang.NullPointerException
 	at com.yahoo.ycsb.db.RedisClient.read(RedisClient.java:139)
 	at com.yahoo.ycsb.DBWrapper.read(DBWrapper.java:163)

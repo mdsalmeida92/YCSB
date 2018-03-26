@@ -29,7 +29,13 @@ run test for all workloads with - serverhost 127.0.1.1 - port 8443 - normal serv
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 inserts
 ./BenchmarkXTest.sh 192.168.10.13 8443 normal 192.168.10.13 puts_gets
 
-./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 r
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 allNoSums
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 insertsNoSum
+
+
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 90reads10inputsNoSums
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 getsPutsUpdateNoSums
+./BenchmarkXTest.sh 137.74.92.78 8443 normal 137.74.92.78 putsGetsNoSums
 
 
 run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - replicated redis server - redishost 127.0.0.1:
@@ -46,6 +52,10 @@ mkdir puts_gets
 ./BenchmarkXTest.sh 192.168.10.13 8443 replicated 192.168.10.13 gets_puts_update
 ./BenchmarkXTest.sh 192.168.10.13 8443 replicated 192.168.10.13 inserts
 ./BenchmarkXTest.sh 192.168.10.13 8443 replicated 192.168.10.13 puts_gets
+
+./BenchmarkXTest.sh 137.74.92.78 8443 replicated 137.74.92.78 allNoSums
+./BenchmarkXTest.sh 137.74.92.78 8443 replicated 137.74.92.78 insertsNoSum
+./BenchmarkXTest.sh 137.74.92.78 8443 replicated 137.74.92.78 readsNoSums
 
 run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - bft server - redishost 127.0.0.1 com 4 replicas:
 ./Benchmark_bft.sh 127.0.1.1 8443 bft 127.0.0.1
@@ -64,7 +74,10 @@ run test for all workloads with workload 1 - serverhost 127.0.1.1 - port 8443 - 
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_byzantine100
 
 ./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_crash1
-./BenchmarkXTest_bft.sh 192.168.10.13 8443 bft 192.168.10.13 4 reads_crash2
+
+./BenchmarkXTest_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4 allNoSums
+./BenchmarkXTest_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4 insertsNoSum
+./BenchmarkXTest_bft.sh 137.74.92.78 8443 bft 137.74.92.78 4 readsNoSums
 
 java -jar Server/BFTreplica.jar -port 6382 -id 3 -path /localhome/mdsalmeida/YCSB/config -byzantine 10
 
@@ -84,8 +97,11 @@ run BFTserver on port 8443:
 
 redis-server /localhome/mdsalmeida/YCSB/linux/redis_bft.conf --port 6379 &
 redis-server linux/redis_bft.conf --port 6379 &
+redis-server linux/redis_bft.conf --port 6380 &
+redis-server linux/redis_bft.conf --port 6381 &
+redis-server linux/redis_bft.conf --port 6382 &
 
-redis-cli -p 6370 shutdown nosave
+redis-cli -p 6380 shutdown nosave
 
 
 intall jar in maven
